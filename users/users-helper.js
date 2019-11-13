@@ -5,12 +5,12 @@ module.exports={
 function validateUser(user){
     let errors = [];
 
-    if (!user.username || username.length < 3){
-        errors.push('Username must be a minimum of 5 characters.')
+    if (user.username === null){
+        errors.push('Username cannot be null.')
     }
 
-    if (!user.password || user.password.length < 5){
-        errors.push('Password must be a minimum of 5 characters.')
+    if (user.password === null){
+        errors.push('Password cannot be null.')
     }
 
     return {

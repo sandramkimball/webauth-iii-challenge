@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Users = require('../users/users-model.js');
 const { validateUser } = require('../users/users-helper.js');
@@ -14,10 +14,11 @@ router.post('/register', (req, res)=> {
 
         Users.add(user)
         .then(saved=> {
+            req.session.username = saved.username;
             res.status(201).json(saved);
         })
         .catch(err=> {
-            res.status(500).json(err);
+            res.status(500).json({message:'Error with registering', err});
         })
     } else {
         res.status(400).json({message: 'Error: ', err: validateResults.errors})
@@ -25,6 +26,9 @@ router.post('/register', (req, res)=> {
 });
 
 router.post('/login', (req, res)=> {
+    let { username, password } = req.body;
+
+    Users.findBy({ username })
     .first()
     .then(user=> {
         if (user && bcrypt.compareSync(password, user.password)){
@@ -46,7 +50,6 @@ function getJwtToken(username){
     const payload = {
         username, 
         role: 'user',
-        department: '',
     };
 
     const secret = recess.env.JWT_SECRET || 'Speak your wisdom.';
